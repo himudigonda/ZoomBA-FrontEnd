@@ -22,10 +22,10 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
 
     const handleCorrectChange = (event) => {
         const correctIndex = parseInt(event.target.value, 10);
-        const newOptions = poll.options.map((opt, idx) => ({
-            ...opt,
-            isCorrect: idx === correctIndex
-        }));
+         const newOptions = poll.options.map((opt, idx) => ({
+             ...opt,
+             isCorrect: idx === correctIndex
+         }));
         updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: correctIndex });
     };
 
@@ -36,12 +36,12 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
 
     const removeOption = (optionIndex) => {
         const newOptions = poll.options.filter((_, i) => i !== optionIndex);
-        let newCorrectIndex = poll.correctOptionIndex;
-        if (optionIndex === poll.correctOptionIndex) {
-            newCorrectIndex = null;
-        } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) {
-            newCorrectIndex = poll.correctOptionIndex - 1;
-        }
+         let newCorrectIndex = poll.correctOptionIndex;
+         if (optionIndex === poll.correctOptionIndex) {
+             newCorrectIndex = null;
+         } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) {
+             newCorrectIndex = poll.correctOptionIndex - 1;
+         }
         updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: newCorrectIndex });
     };
 
@@ -52,8 +52,8 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
 
     return (
         <Paper elevation={0} sx={{ p: 3, mb: 3, border: '1px solid', borderColor: 'grey.200', borderRadius: 2, position: 'relative' }}>
-            {/* Add Remove Poll Button */}
-            <IconButton
+             {/* Add Remove Poll Button */}
+             <IconButton
                 aria-label="Remove poll"
                 onClick={() => removePoll(pollIndex)}
                 size="small"
@@ -62,9 +62,9 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
                     top: 8,
                     right: 8,
                     color: 'grey.500', // Use a neutral color
-                    '&:hover': {
-                        color: 'error.main' // Turn red on hover
-                    }
+                     '&:hover': {
+                         color: 'error.main' // Turn red on hover
+                     }
                 }}
             >
                 <CloseIcon fontSize="small" />
@@ -72,8 +72,8 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
 
             <Stack spacing={2}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' /* Add padding to prevent overlap with close icon */ }}>
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
-                    {/* Removed the optional remove poll button from here */}
+                     <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
+                     {/* Removed the optional remove poll button from here */}
                 </Box>
 
                 <TextField
@@ -97,7 +97,7 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
                         <Box key={optionIndex} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
                             <FormControlLabel
                                 value={optionIndex.toString()}
-                                control={<Radio size="small" icon={<RadioButtonUncheckedIcon fontSize="small" />} checkedIcon={<CheckCircleOutlineIcon fontSize="small" />} />}
+                                control={<Radio size="small" icon={<RadioButtonUncheckedIcon fontSize="small"/>} checkedIcon={<CheckCircleOutlineIcon fontSize="small"/>} />}
                                 label={
                                     <TextField
                                         placeholder={`Option ${optionIndex + 1}`}
@@ -112,26 +112,26 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
                                 sx={{ flexGrow: 1, mr: 0 /* Remove default margin */ }}
                                 labelPlacement="end"
                             />
-                            {poll.options.length > 1 && (
-                                <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
-                                    <RemoveCircleOutlineIcon fontSize="inherit" />
-                                </IconButton>
-                            )}
+                             {poll.options.length > 1 && (
+                                 <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
+                                     <RemoveCircleOutlineIcon fontSize="inherit"/>
+                                 </IconButton>
+                             )}
                         </Box>
                     ))}
                 </RadioGroup>
 
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                    <Button
-                        variant="text"
-                        size="small"
-                        startIcon={<AddCircleOutlineIcon />}
-                        onClick={addOption}
-                    >
-                        Add Option
-                    </Button>
-                    <Button
+                     <Button
+                         variant="text"
+                         size="small"
+                         startIcon={<AddCircleOutlineIcon />}
+                         onClick={addOption}
+                     >
+                         Add Option
+                     </Button>
+                     <Button
                         variant="contained"
                         size="small"
                         endIcon={<ArrowForwardIcon />}

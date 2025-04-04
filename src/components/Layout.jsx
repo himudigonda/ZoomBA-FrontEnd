@@ -1,19 +1,19 @@
 // src/components/Layout.jsx
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom'; // Use NavLink for active styling
-import { Drawer, List, ListItemButton, ListItemText, Box, ListSubheader, Divider } from '@mui/material';
+import { NavLink, useLocation } from 'react-router-dom';
+import { Drawer, List, ListItemButton, ListItemText, Box, ListSubheader } from '@mui/material';
 import Logo from './Logo'; // Import the Logo component
 
-const drawerWidth = 260; // Keep drawer width
+const drawerWidth = 260;
 
-// Define navigation structure (no changes here)
+// Define UPDATED navigation structure
 const navSections = [
     {
         title: 'Meetings',
         items: [
             { text: 'Create New Meeting', path: '/create-meeting' },
-            { text: 'Join New Meeting', path: '/join-meeting' },
-            { text: 'Past Meetings', path: '/past-meetings' },
+            // Removed 'Join New Meeting'
+            // Removed 'Past Meetings'
         ]
     },
     {
@@ -26,16 +26,16 @@ const navSections = [
         title: 'Polls and Quizzes',
         items: [
             { text: 'Create Poll', path: '/create-poll' },
-            { text: 'Create Quiz', path: '/create-quiz' },
+            // Removed 'Create Quiz'
         ]
     }
 ];
 
 export default function Layout({ children }) {
-    const location = useLocation(); // Get current path
+    const location = useLocation();
 
     return (
-        <Box sx={{ display: 'flex' }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh' /* Ensure layout takes full viewport height */ }}>
             <Drawer
                 variant="permanent"
                 anchor="left"
@@ -45,51 +45,56 @@ export default function Layout({ children }) {
                     '& .MuiDrawer-paper': {
                         width: drawerWidth,
                         boxSizing: 'border-box',
-                        borderRight: 'none', // Ensure no border from drawer itself
-                        backgroundColor: 'background.paper' // Use theme background
+                        borderRight: 'none',
+                        backgroundColor: 'background.paper'
                     },
                 }}
             >
                 <Logo />
                 <List sx={{ pt: 0 }}>
                     {navSections.map((section) => (
-                        <React.Fragment key={section.title}>
-                            <ListSubheader sx={{ bgcolor: 'transparent', fontWeight: 'bold', color: 'text.secondary', pt: 2, pb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
-                                {section.title}
-                            </ListSubheader>
-                            {section.items.map((item) => (
-                                <ListItemButton
-                                    key={item.text}
-                                    component={NavLink}
-                                    to={item.path}
-                                    selected={location.pathname === item.path}
-                                >
-                                    {/* Use primaryTypographyProps from theme */}
-                                    <ListItemText primary={item.text} />
-                                </ListItemButton>
-                            ))}
-                        </React.Fragment>
+                        // Only render section if it has items after filtering
+                        section.items.length > 0 && (
+                            <React.Fragment key={section.title}>
+                                <ListSubheader sx={{ bgcolor: 'transparent', fontWeight: 'bold', color: 'text.secondary', pt: 2, pb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                                    {section.title}
+                                </ListSubheader>
+                                {section.items.map((item) => (
+                                    <ListItemButton
+                                        key={item.text}
+                                        component={NavLink}
+                                        to={item.path}
+                                        selected={location.pathname === item.path}
+                                    >
+                                        <ListItemText primary={item.text} />
+                                    </ListItemButton>
+                                ))}
+                            </React.Fragment>
+                        )
                     ))}
                 </List>
             </Drawer>
 
-            {/* Main Content Area - Updated for centering and max-width */}
+            {/* Main Content Area - Still centered with max-width but allows vertical growth */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    bgcolor: 'background.default', // Use theme default background
-                    p: 4, // Keep padding or adjust (e.g., p: { xs: 2, sm: 3, md: 4 })
-                    minHeight: '100vh',
-                    display: 'flex', // Use flex to help center content potentially
-                    flexDirection: 'column', // Stack content vertically
-                    alignItems: 'center', // Center content horizontally
+                    bgcolor: 'background.default',
+                    p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+                    display: 'flex',
+                    flexDirection: 'column', // Stack children vertically
+                    alignItems: 'center', // Center children horizontally
+                    overflowY: 'auto', // Allow scrolling on the main content area if needed
                 }}
             >
-                {/* Add a wrapper Box to control the content's max width and centering */}
+                {/* Inner wrapper controls max width and allows children to take height */}
                 <Box sx={{
-                    width: '100%', maxWidth: '1200px', // Set a max-width for content readability
-                    flexGrow: 1
+                    width: '100%',
+                    maxWidth: '1200px',
+                    display: 'flex', // Use flexbox here too
+                    flexDirection: 'column', // Stack content
+                    flexGrow: 1, // Allow this box to grow vertically
                 }}>
                     {children}
                 </Box>
