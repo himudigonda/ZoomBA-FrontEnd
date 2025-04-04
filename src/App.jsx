@@ -1,8 +1,10 @@
+import Layout from './components/Layout';
+
 function App() {
   return (
-    <div>
-      <h1>ZoomBA Professor Dashboard</h1>
-    </div>
+    <Layout>
+      <h1>Welcome to ZoomBA Professor Dashboard</h1>
+    </Layout>
   );
 }
 
