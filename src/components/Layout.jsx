@@ -4,15 +4,15 @@ import { NavLink, useLocation } from 'react-router-dom'; // Use NavLink for acti
 import { Drawer, List, ListItemButton, ListItemText, Box, ListSubheader, Divider } from '@mui/material';
 import Logo from './Logo'; // Import the Logo component
 
-const drawerWidth = 260; // Increase width slightly
+const drawerWidth = 260; // Keep drawer width
 
-// Define navigation structure
+// Define navigation structure (no changes here)
 const navSections = [
     {
         title: 'Meetings',
         items: [
             { text: 'Create New Meeting', path: '/create-meeting' },
-            { text: 'Join New Meeting', path: '/join-meeting' }, // Add placeholder paths
+            { text: 'Join New Meeting', path: '/join-meeting' },
             { text: 'Past Meetings', path: '/past-meetings' },
         ]
     },
@@ -26,7 +26,7 @@ const navSections = [
         title: 'Polls and Quizzes',
         items: [
             { text: 'Create Poll', path: '/create-poll' },
-            { text: 'Create Quiz', path: '/create-quiz' }, // Add placeholder path
+            { text: 'Create Quiz', path: '/create-quiz' },
         ]
     }
 ];
@@ -50,13 +50,11 @@ export default function Layout({ children }) {
                     },
                 }}
             >
-                <Logo /> {/* Add the logo */}
-                {/* <Divider sx={{ mb: 1 }}/> Optionally add a divider */}
-
-                <List sx={{ pt: 0 }}> {/* Remove padding top */}
+                <Logo />
+                <List sx={{ pt: 0 }}>
                     {navSections.map((section) => (
                         <React.Fragment key={section.title}>
-                            <ListSubheader sx={{ bgcolor: 'transparent', fontWeight: 'bold', color: 'text.secondary', pt: 2, pb: 1 }}>
+                            <ListSubheader sx={{ bgcolor: 'transparent', fontWeight: 'bold', color: 'text.secondary', pt: 2, pb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
                                 {section.title}
                             </ListSubheader>
                             {section.items.map((item) => (
@@ -64,11 +62,10 @@ export default function Layout({ children }) {
                                     key={item.text}
                                     component={NavLink}
                                     to={item.path}
-                                    selected={location.pathname === item.path} // Explicitly set selected based on path
-                                // sx prop styling is handled globally in theme.js now
+                                    selected={location.pathname === item.path}
                                 >
-                                    {/* Removed Icons */}
-                                    <ListItemText primary={item.text} primaryTypographyProps={{ fontWeight: 500 }} />
+                                    {/* Use primaryTypographyProps from theme */}
+                                    <ListItemText primary={item.text} />
                                 </ListItemButton>
                             ))}
                         </React.Fragment>
@@ -76,17 +73,26 @@ export default function Layout({ children }) {
                 </List>
             </Drawer>
 
-            {/* Main Content Area */}
+            {/* Main Content Area - Updated for centering and max-width */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
                     bgcolor: 'background.default', // Use theme default background
-                    p: 4, // Adjust padding as needed
-                    minHeight: '100vh'
+                    p: 4, // Keep padding or adjust (e.g., p: { xs: 2, sm: 3, md: 4 })
+                    minHeight: '100vh',
+                    display: 'flex', // Use flex to help center content potentially
+                    flexDirection: 'column', // Stack content vertically
+                    alignItems: 'center', // Center content horizontally
                 }}
             >
-                {children}
+                {/* Add a wrapper Box to control the content's max width and centering */}
+                <Box sx={{
+                    width: '100%', maxWidth: '1200px', // Set a max-width for content readability
+                    flexGrow: 1
+                }}>
+                    {children}
+                </Box>
             </Box>
         </Box>
     );

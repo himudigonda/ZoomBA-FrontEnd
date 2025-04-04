@@ -6,9 +6,10 @@ import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import CloseIcon from '@mui/icons-material/Close'; // Import Close icon for removing the poll
 
 // Component for a single Poll Card
-function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
+function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added removePoll prop
     const handleQuestionChange = (event) => {
         updatePoll(pollIndex, { ...poll, question: event.target.value });
     };
@@ -35,10 +36,9 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
 
     const removeOption = (optionIndex) => {
         const newOptions = poll.options.filter((_, i) => i !== optionIndex);
-        // Adjust correctOptionIndex if the removed option was the correct one or before it
         let newCorrectIndex = poll.correctOptionIndex;
         if (optionIndex === poll.correctOptionIndex) {
-            newCorrectIndex = null; // No correct option selected anymore
+            newCorrectIndex = null;
         } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) {
             newCorrectIndex = poll.correctOptionIndex - 1;
         }
@@ -51,14 +51,29 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
     }
 
     return (
-        <Paper elevation={0} sx={{ p: 3, mb: 3, border: '1px solid', borderColor: 'grey.200', borderRadius: 2 }}>
+        <Paper elevation={0} sx={{ p: 3, mb: 3, border: '1px solid', borderColor: 'grey.200', borderRadius: 2, position: 'relative' }}>
+            {/* Add Remove Poll Button */}
+            <IconButton
+                aria-label="Remove poll"
+                onClick={() => removePoll(pollIndex)}
+                size="small"
+                sx={{
+                    position: 'absolute',
+                    top: 8,
+                    right: 8,
+                    color: 'grey.500', // Use a neutral color
+                    '&:hover': {
+                        color: 'error.main' // Turn red on hover
+                    }
+                }}
+            >
+                <CloseIcon fontSize="small" />
+            </IconButton>
+
             <Stack spacing={2}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' /* Add padding to prevent overlap with close icon */ }}>
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
-                    {/* Optionally add a remove poll button */}
-                    {/* <IconButton size="small" onClick={() => removePoll(pollIndex)} color="error">
-                         <RemoveCircleOutlineIcon />
-                     </IconButton> */}
+                    {/* Removed the optional remove poll button from here */}
                 </Box>
 
                 <TextField
@@ -68,7 +83,7 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                     value={poll.question}
                     onChange={handleQuestionChange}
                     size="small"
-                    sx={{ backgroundColor: 'background.paper' }} // Override default background if needed inside Paper
+                    sx={{ backgroundColor: 'background.paper' }}
                 />
 
                 <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', pt: 1 }}>Options:</Typography>
@@ -94,11 +109,11 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                                         sx={{ backgroundColor: 'background.paper' }}
                                     />
                                 }
-                                sx={{ flexGrow: 1 }}
+                                sx={{ flexGrow: 1, mr: 0 /* Remove default margin */ }}
                                 labelPlacement="end"
                             />
-                            {poll.options.length > 1 && ( // Only show remove if more than 1 option
-                                <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 'auto' }}>
+                            {poll.options.length > 1 && (
+                                <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
                                     <RemoveCircleOutlineIcon fontSize="inherit" />
                                 </IconButton>
                             )}
@@ -121,7 +136,7 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                         size="small"
                         endIcon={<ArrowForwardIcon />}
                         // onClick={handleSubmit} // Define submit logic per poll
-                        disabled={!poll.question || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null} // Basic validation
+                        disabled={!poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null} // Require at least 2 options
                     >
                         Publish Poll
                     </Button>
@@ -135,7 +150,6 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
 // Main Component
 export default function CreatePoll() {
     const [polls, setPolls] = useState([
-        // Initial state with one default poll structure
         { id: Date.now(), question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }
     ]);
 
@@ -148,14 +162,14 @@ export default function CreatePoll() {
     const addPoll = () => {
         setPolls([
             ...polls,
-            // Add a new poll structure
-            { id: Date.now(), question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }
+            { id: Date.now() + polls.length, question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null } // Ensure unique ID on add
         ]);
     };
 
-    // const removePoll = (index) => {
-    //     setPolls(polls.filter((_, i) => i !== index));
-    // };
+    // Function to remove a poll by its index
+    const removePoll = (indexToRemove) => {
+        setPolls(prevPolls => prevPolls.filter((_, index) => index !== indexToRemove));
+    };
 
     const handleOverallSubmit = () => {
         console.log('Submitting all polls:', polls);
@@ -163,27 +177,25 @@ export default function CreatePoll() {
     };
 
     return (
-        <Box sx={{ maxWidth: 700 }}>
-            {/* <Typography variant="h5" gutterBottom sx={{ mb: 3, fontWeight: 600 }}>
-                 Create Polls
-             </Typography> */}
-
+        // Removed maxWidth here, letting the parent Box in Layout control it
+        <Box>
             {polls.map((poll, index) => (
                 <PollCard
                     key={poll.id} // Use a stable key
                     poll={poll}
                     pollIndex={index}
                     updatePoll={updatePoll}
-                // removePoll={removePoll} // Optional: Add remove poll functionality
+                    removePoll={removePoll} // Pass the remove function
                 />
             ))}
 
+            {/* Only show add button if there are polls, or always show? Let's always show */}
             <Button
                 variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addPoll}
                 fullWidth // Make button full width
-                sx={{ mt: 1, mb: 3, py: 1.5, borderColor: 'grey.300', color: 'text.primary' }} // Style add button
+                sx={{ mt: 1, mb: 3, py: 1.5, borderColor: 'grey.300', color: 'text.primary', bgcolor: 'background.paper', '&:hover': { bgcolor: 'grey.100' } }} // Style add button
             >
                 Add New Poll
             </Button>
