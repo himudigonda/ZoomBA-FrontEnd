@@ -1,9 +1,18 @@
+import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
+import CreateMeeting from './screens/CreateMeeting';
+import Leaderboard from './screens/Leaderboard';
+import CreatePoll from './screens/CreatePoll';
 
 function App() {
   return (
     <Layout>
-      <h1>Welcome to ZoomBA Professor Dashboard</h1>
+      <Routes>
+        <Route path="/" element={<h1>Welcome to ZoomBA</h1>} />
+        <Route path="/create-meeting" element={<CreateMeeting />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/create-poll" element={<CreatePoll />} />
+      </Routes>
     </Layout>
   );
 }
