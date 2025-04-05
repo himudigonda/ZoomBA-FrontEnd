@@ -1,9 +1,9 @@
 // src/screens/Leaderboard.jsx
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Typography, TextField, InputAdornment, IconButton, Stack, Paper } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment, IconButton, Stack, Paper, Button, Tooltip } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import FileDownloadIcon from '@mui/icons-material/FileDownload'; // Added Icon
 
 console.log("[DEBUG] Leaderboard.jsx :: Module loaded.");
 
@@ -36,10 +36,7 @@ console.log("[DEBUG] Leaderboard.jsx :: Initial rows data:", initialRows.length,
 const columns = [
     {
         field: 'position', headerName: 'Position', width: 90, type: 'number', align: 'center', headerAlign: 'center',
-        renderCell: (params) => {
-            // Just display the already calculated position
-            return (<Typography variant="body2" fontWeight="medium">{getOrdinal(params.row.position)}</Typography>);
-        },
+        renderCell: (params) => (<Typography variant="body2" fontWeight="medium">{getOrdinal(params.row.position)}</Typography>),
     },
     {
         field: 'student', headerName: 'Student', flex: 1, minWidth: 220,
@@ -49,7 +46,6 @@ const columns = [
     { field: 'pollScore', headerName: 'Poll Score', width: 140, headerAlign: 'center', align: 'center' },
     { field: 'timeAttended', headerName: 'Time Attended', width: 160, headerAlign: 'center', align: 'center' },
     { field: 'questionsAsked', headerName: '# Questions Asked', width: 170, type: 'number', headerAlign: 'center', align: 'center' },
-    // Removed Actions Column
 ];
 console.log("[DEBUG] Leaderboard.jsx :: Defined columns:", columns.length, "columns");
 
@@ -92,6 +88,52 @@ export default function Leaderboard() {
         return result;
     }, [rows, searchText]);
 
+    // CSV Generation
+    const generateCsvData = useCallback(() => {
+        console.log("[DEBUG] Leaderboard.generateCsvData :: Generating CSV data.");
+        const headers = columns.map(col => col.headerName).join(';');
+        const csvRows = rankedRows.map(row => {
+            const values = columns.map(col => {
+                if (col.field === 'position') {
+                    return getOrdinal(row[col.field]);
+                }
+                return row[col.field];
+            });
+            return values.join(';');
+        }).join('\r\n'); // Use CRLF for better compatibility
+        const csvData = headers + '\r\n' + csvRows;
+        console.log("[DEBUG] Leaderboard.generateCsvData :: CSV data generated.");
+        return csvData;
+    }, [rankedRows, columns]);
+
+    // Trigger Download
+    const triggerDownload = useCallback((csvData) => {
+        console.log("[DEBUG] Leaderboard.triggerDownload :: Triggering CSV download.");
+        const filename = 'leaderboard.csv';
+        const bom = '\uFEFF'; // Byte Order Mark for UTF-8 encoding
+        const csvWithBom = bom + csvData;
+
+        const blob = new Blob([csvWithBom], { type: 'text/csv;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+
+        console.log("[DEBUG] Leaderboard.triggerDownload :: Download triggered.");
+    }, []);
+
+
+    const handleExport = useCallback(() => {
+        console.log(`[DEBUG] Leaderboard.handleExport :: Export clicked.`);
+        const csvData = generateCsvData();
+        triggerDownload(csvData);
+
+    }, [generateCsvData, triggerDownload]);
+
     console.log("[DEBUG] Leaderboard.Leaderboard :: Rendering component structure.");
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
@@ -118,7 +160,11 @@ export default function Leaderboard() {
                         }}
                         sx={{ flexGrow: 1, minWidth: '200px' }}
                     />
-                    {/* Removed Filter Button */}
+                    <Tooltip title="Export leaderboard data as CSV" arrow>
+                        <Button variant="contained" startIcon={<FileDownloadIcon />} onClick={handleExport}>
+                            Export
+                        </Button>
+                    </Tooltip>
                 </Stack>
             </Stack>
 
