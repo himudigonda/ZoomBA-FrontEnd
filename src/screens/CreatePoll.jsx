@@ -1,89 +1,65 @@
 // src/screens/CreatePoll.jsx
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider } from '@mui/material';
+import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider } from '@mui/material'; // Keep Divider if needed between cards
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-import CloseIcon from '@mui/icons-material/Close'; // Import Close icon for removing the poll
+import CloseIcon from '@mui/icons-material/Close';
 
 // Component for a single Poll Card
-function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added removePoll prop
-    const handleQuestionChange = (event) => {
-        updatePoll(pollIndex, { ...poll, question: event.target.value });
-    };
-
-    const handleOptionChange = (optionIndex, value) => {
-        const newOptions = [...poll.options];
-        newOptions[optionIndex] = { ...newOptions[optionIndex], text: value };
-        updatePoll(pollIndex, { ...poll, options: newOptions });
-    };
-
-    const handleCorrectChange = (event) => {
-        const correctIndex = parseInt(event.target.value, 10);
-         const newOptions = poll.options.map((opt, idx) => ({
-             ...opt,
-             isCorrect: idx === correctIndex
-         }));
-        updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: correctIndex });
-    };
-
-    const addOption = () => {
-        const newOptions = [...poll.options, { text: '', isCorrect: false }];
-        updatePoll(pollIndex, { ...poll, options: newOptions });
-    };
-
-    const removeOption = (optionIndex) => {
-        const newOptions = poll.options.filter((_, i) => i !== optionIndex);
-         let newCorrectIndex = poll.correctOptionIndex;
-         if (optionIndex === poll.correctOptionIndex) {
-             newCorrectIndex = null;
-         } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) {
-             newCorrectIndex = poll.correctOptionIndex - 1;
-         }
-        updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: newCorrectIndex });
-    };
-
-    const getCorrectOptionIndex = () => {
-        const index = poll.options.findIndex(opt => opt.isCorrect);
-        return index === -1 ? null : index;
-    }
+function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
+    // ... (internal logic of PollCard remains the same)
+    const handleQuestionChange = (event) => { updatePoll(pollIndex, { ...poll, question: event.target.value }); };
+    const handleOptionChange = (optionIndex, value) => { const newOptions = [...poll.options]; newOptions[optionIndex] = { ...newOptions[optionIndex], text: value }; updatePoll(pollIndex, { ...poll, options: newOptions }); };
+    const handleCorrectChange = (event) => { const correctIndex = parseInt(event.target.value, 10); const newOptions = poll.options.map((opt, idx) => ({ ...opt, isCorrect: idx === correctIndex })); updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: correctIndex }); };
+    const addOption = () => { const newOptions = [...poll.options, { text: '', isCorrect: false }]; updatePoll(pollIndex, { ...poll, options: newOptions }); };
+    const removeOption = (optionIndex) => { const newOptions = poll.options.filter((_, i) => i !== optionIndex); let newCorrectIndex = poll.correctOptionIndex; if (optionIndex === poll.correctOptionIndex) { newCorrectIndex = null; } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) { newCorrectIndex = poll.correctOptionIndex - 1; } updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: newCorrectIndex }); };
+    const getCorrectOptionIndex = () => { const index = poll.options.findIndex(opt => opt.isCorrect); return index === -1 ? null : index; }
 
     return (
-        <Paper elevation={0} sx={{ p: 3, mb: 3, border: '1px solid', borderColor: 'grey.200', borderRadius: 2, position: 'relative' }}>
-             {/* Add Remove Poll Button */}
-             <IconButton
+        // Use Paper component for consistent card styling
+        <Paper
+            variant="outlined" // Use outlined variant consistent with other cards
+            sx={{
+                p: 3,
+                mb: 3, // Keep margin bottom between poll cards
+                borderRadius: 3, // Consistent radius (e.g., 12px)
+                position: 'relative',
+                // Border handled by variant="outlined"
+                // boxShadow: (theme) => theme.shadows[1], // Optional subtle shadow
+            }}
+        >
+            <IconButton
                 aria-label="Remove poll"
                 onClick={() => removePoll(pollIndex)}
                 size="small"
                 sx={{
                     position: 'absolute',
-                    top: 8,
-                    right: 8,
-                    color: 'grey.500', // Use a neutral color
-                     '&:hover': {
-                         color: 'error.main' // Turn red on hover
-                     }
+                    top: 12, // Adjust position slightly
+                    right: 12,
+                    color: 'grey.500',
+                    '&:hover': { color: 'error.main', backgroundColor: (theme) => theme.palette.action.hover }
                 }}
             >
                 <CloseIcon fontSize="small" />
             </IconButton>
 
-            <Stack spacing={2}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' /* Add padding to prevent overlap with close icon */ }}>
-                     <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
-                     {/* Removed the optional remove poll button from here */}
+            {/* Use Stack for consistent internal spacing */}
+            <Stack spacing={2.5}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' }}>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
                 </Box>
 
                 <TextField
                     label="Poll Question"
                     fullWidth
-                    variant="outlined"
+                    // variant="outlined" // Default from theme
                     value={poll.question}
                     onChange={handleQuestionChange}
-                    size="small"
-                    sx={{ backgroundColor: 'background.paper' }}
+                // size="small" // Default from theme
+                // sx={{ backgroundColor: 'background.paper' }} // Let theme handle it
                 />
 
                 <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', pt: 1 }}>Options:</Typography>
@@ -97,52 +73,50 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) { // Added remove
                         <Box key={optionIndex} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
                             <FormControlLabel
                                 value={optionIndex.toString()}
-                                control={<Radio size="small" icon={<RadioButtonUncheckedIcon fontSize="small"/>} checkedIcon={<CheckCircleOutlineIcon fontSize="small"/>} />}
+                                control={<Radio size="small" icon={<RadioButtonUncheckedIcon fontSize="inherit" />} checkedIcon={<CheckCircleOutlineIcon fontSize="inherit" />} />}
                                 label={
                                     <TextField
                                         placeholder={`Option ${optionIndex + 1}`}
                                         value={option.text}
                                         onChange={(e) => handleOptionChange(optionIndex, e.target.value)}
                                         fullWidth
-                                        variant="outlined"
-                                        size="small"
-                                        sx={{ backgroundColor: 'background.paper' }}
+                                    // variant="outlined" // Default from theme
+                                    // size="small" // Default from theme
+                                    // sx={{ backgroundColor: 'background.paper' }} // Theme handles background
                                     />
                                 }
-                                sx={{ flexGrow: 1, mr: 0 /* Remove default margin */ }}
+                                sx={{ flexGrow: 1, mr: 0 }}
                                 labelPlacement="end"
                             />
-                             {poll.options.length > 1 && (
-                                 <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
-                                     <RemoveCircleOutlineIcon fontSize="inherit"/>
-                                 </IconButton>
-                             )}
+                            {poll.options.length > 1 && (
+                                <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
+                                    <RemoveCircleOutlineIcon fontSize="inherit" />
+                                </IconButton>
+                            )}
                         </Box>
                     ))}
                 </RadioGroup>
 
-
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-                     <Button
-                         variant="text"
-                         size="small"
-                         startIcon={<AddCircleOutlineIcon />}
-                         onClick={addOption}
-                     >
-                         Add Option
-                     </Button>
-                     <Button
-                        variant="contained"
-                        size="small"
+                    <Button
+                        variant="text" // Use text variant for less emphasis
+                        // size="small" // Default from theme override or specify if needed
+                        startIcon={<AddCircleOutlineIcon />}
+                        onClick={addOption}
+                    >
+                        Add Option
+                    </Button>
+                    <Button
+                        variant="contained" // Keep contained for primary action per poll
+                        // size="small" // Default from theme override or specify if needed
                         endIcon={<ArrowForwardIcon />}
-                        // onClick={handleSubmit} // Define submit logic per poll
-                        disabled={!poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null} // Require at least 2 options
+                        disabled={!poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null}
                     >
                         Publish Poll
                     </Button>
                 </Box>
             </Stack>
-        </Paper>
+        </Paper> // Close Paper
     );
 }
 
@@ -153,57 +127,50 @@ export default function CreatePoll() {
         { id: Date.now(), question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }
     ]);
 
-    const updatePoll = (index, updatedPollData) => {
-        const newPolls = [...polls];
-        newPolls[index] = updatedPollData;
-        setPolls(newPolls);
-    };
-
-    const addPoll = () => {
-        setPolls([
-            ...polls,
-            { id: Date.now() + polls.length, question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null } // Ensure unique ID on add
-        ]);
-    };
-
-    // Function to remove a poll by its index
-    const removePoll = (indexToRemove) => {
-        setPolls(prevPolls => prevPolls.filter((_, index) => index !== indexToRemove));
-    };
-
-    const handleOverallSubmit = () => {
-        console.log('Submitting all polls:', polls);
-        // Logic to submit/save all defined polls
-    };
+    const updatePoll = (index, updatedPollData) => { /* ... */ const newPolls = [...polls]; newPolls[index] = updatedPollData; setPolls(newPolls); };
+    const addPoll = () => { /* ... */ setPolls([...polls, { id: Date.now() + polls.length, question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }]); };
+    const removePoll = (indexToRemove) => { /* ... */ setPolls(prevPolls => prevPolls.filter((_, index) => index !== indexToRemove)); };
+    // const handleOverallSubmit = () => { console.log('Submitting all polls:', polls); }; // Keep if needed
 
     return (
-        // Removed maxWidth here, letting the parent Box in Layout control it
-        <Box>
+        // This Box fills the space provided by Layout's inner wrapper
+        <Box sx={{ width: '100%' }}>
+            {/* Optional Title for the Page */}
+            {/* <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>Create Polls</Typography> */}
+
             {polls.map((poll, index) => (
                 <PollCard
-                    key={poll.id} // Use a stable key
+                    key={poll.id}
                     poll={poll}
                     pollIndex={index}
                     updatePoll={updatePoll}
-                    removePoll={removePoll} // Pass the remove function
+                    removePoll={removePoll}
                 />
+                // Optional: Add Divider between cards
+                // {index < polls.length - 1 && <Divider sx={{ my: 3 }} />}
             ))}
 
-            {/* Only show add button if there are polls, or always show? Let's always show */}
+            {/* "Add New Poll" Button - Use outlined style for secondary action */}
             <Button
-                variant="outlined"
+                variant="outlined" // More appropriate for adding another item
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addPoll}
-                fullWidth // Make button full width
-                sx={{ mt: 1, mb: 3, py: 1.5, borderColor: 'grey.300', color: 'text.primary', bgcolor: 'background.paper', '&:hover': { bgcolor: 'grey.100' } }} // Style add button
+                fullWidth
+                sx={{
+                    mt: 1, // Adjust margin top if needed
+                    mb: 3,
+                    py: 1.5, // Give it good vertical padding
+                    // Use theme styles for border/color
+                    // borderColor: 'grey.300',
+                    // color: 'text.primary',
+                    // bgcolor: 'background.paper', // Optional background
+                    // '&:hover': { bgcolor: 'grey.100' }
+                }}
             >
                 Add New Poll
             </Button>
 
             {/* Optional: Add a button to submit/save all polls at once */}
-            {/* <Button variant="contained" size="large" onClick={handleOverallSubmit} sx={{ mt: 2 }}>
-                Save All Polls
-            </Button> */}
         </Box>
     );
 }
