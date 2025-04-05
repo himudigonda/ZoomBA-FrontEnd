@@ -1,6 +1,4 @@
 // src/screens/CreateMeeting.jsx
-// NO CHANGES FROM PHASE 2 - Relying on Theme Overrides
-
 import { Box, TextField, Button, MenuItem, Typography, Stack, Paper } from '@mui/material';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
@@ -8,12 +6,14 @@ export default function CreateMeeting() {
     return (
         <Box sx={{ display: 'flex', justifyContent: 'center', width: '100%', pt: { xs: 2, md: 4 } }}>
             <Paper
-                variant="outlined"
+                // Use elevation instead of outline for shadow
+                elevation={1}
                 sx={{
                     p: { xs: 3, md: 4 },
                     width: '100%',
                     maxWidth: '750px',
-                    borderRadius: 3, // e.g., 12px
+                    borderRadius: '12px', // Example specific radius
+                    border: 'none', // Ensure no border when using elevation
                 }}
             >
                 <Stack spacing={3}>
@@ -32,6 +32,8 @@ export default function CreateMeeting() {
                         type="date"
                         fullWidth
                         InputLabelProps={{ shrink: true }}
+                        // Add aria-label for better accessibility if label isn't sufficient
+                        inputProps={{ 'aria-label': 'Scheduled Meeting Date' }}
                     />
 
                     <TextField
@@ -39,6 +41,7 @@ export default function CreateMeeting() {
                         type="time"
                         fullWidth
                         InputLabelProps={{ shrink: true }}
+                        inputProps={{ 'aria-label': 'Scheduled Meeting Start Time' }}
                     />
 
                     <TextField
@@ -47,6 +50,7 @@ export default function CreateMeeting() {
                         fullWidth
                         defaultValue={30}
                         InputLabelProps={{ shrink: true }}
+                        SelectProps={{ 'aria-label': 'Meeting Duration' }} // aria-label for Select
                     >
                         {[15, 30, 45, 60, 75, 90, 120].map((option) => (
                             <MenuItem key={option} value={option}>

@@ -1,6 +1,6 @@
 // src/screens/CreatePoll.jsx
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider } from '@mui/material';
+import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider, Tooltip } from '@mui/material'; // Added Tooltip
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -18,31 +18,45 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
     const removeOption = (optionIndex) => { const newOptions = poll.options.filter((_, i) => i !== optionIndex); let newCorrectIndex = poll.correctOptionIndex; if (optionIndex === poll.correctOptionIndex) { newCorrectIndex = null; } else if (poll.correctOptionIndex !== null && optionIndex < poll.correctOptionIndex) { newCorrectIndex = poll.correctOptionIndex - 1; } updatePoll(pollIndex, { ...poll, options: newOptions, correctOptionIndex: newCorrectIndex }); };
     const getCorrectOptionIndex = () => { const index = poll.options.findIndex(opt => opt.isCorrect); return index === -1 ? null : index; }
 
+    // Determine disabled state and reason for Publish button
+    const isPublishDisabled = !poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null;
+    let publishTooltip = "Publish this poll";
+    if (isPublishDisabled) {
+        if (!poll.question) publishTooltip = "Please enter a poll question.";
+        else if (poll.options.length < 2) publishTooltip = "Poll must have at least two options.";
+        else if (poll.options.some(o => !o.text)) publishTooltip = "Please fill in all option fields.";
+        else if (getCorrectOptionIndex() === null) publishTooltip = "Please select the correct answer.";
+        else publishTooltip = "Cannot publish poll (check inputs)."; // Fallback
+    }
+
+
     return (
         <Paper
-            variant="outlined"
+            // Use elevation instead of outline
+            elevation={1}
             sx={{
                 p: 3,
                 mb: 3,
-                borderRadius: 3, // Match theme or set specific (e.g., 12px)
+                borderRadius: '12px', // Consistent radius
                 position: 'relative',
+                border: 'none', // Ensure no border with elevation
             }}
         >
-            <IconButton
-                aria-label="Remove poll"
-                onClick={() => removePoll(pollIndex)}
-                size="small"
-                sx={{
-                    position: 'absolute',
-                    top: 12,
-                    right: 12,
-                    color: 'grey.500',
-                    // Hover handled by theme override for MuiIconButton
-                    // '&:hover': { color: 'error.main', backgroundColor: (theme) => theme.palette.action.hover }
-                }}
-            >
-                <CloseIcon fontSize="small" />
-            </IconButton>
+            <Tooltip title="Remove this poll" arrow>
+                <IconButton
+                    aria-label="Remove this poll"
+                    onClick={() => removePoll(pollIndex)}
+                    size="small"
+                    sx={{
+                        position: 'absolute',
+                        top: 12,
+                        right: 12,
+                        color: 'grey.500',
+                    }}
+                >
+                    <CloseIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
 
             <Stack spacing={2.5}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' }}>
@@ -54,12 +68,12 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                     fullWidth
                     value={poll.question}
                     onChange={handleQuestionChange}
-                // Use defaults from theme
+                    inputProps={{ 'aria-label': `Poll ${pollIndex + 1} Question` }}
                 />
 
                 <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', pt: 1 }}>Options:</Typography>
                 <RadioGroup
-                    aria-label={`poll-${pollIndex}-correct-option`}
+                    aria-label={`Poll ${pollIndex + 1} Correct Option`}
                     name={`poll-${pollIndex}-radios`}
                     value={getCorrectOptionIndex() !== null ? getCorrectOptionIndex().toString() : ''}
                     onChange={handleCorrectChange}
@@ -68,41 +82,35 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                         <Box key={optionIndex} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
                             <FormControlLabel
                                 value={optionIndex.toString()}
-                                // Use theme styles for Radio
                                 control={<Radio
                                     size="small"
-                                    icon={<RadioButtonUncheckedIcon fontSize="inherit" />} // Use inherit to match surrounding font size
+                                    icon={<RadioButtonUncheckedIcon fontSize="inherit" />}
                                     checkedIcon={<CheckCircleOutlineIcon fontSize="inherit" />}
                                 />}
                                 label={
-                                    // TextField for option text
                                     <TextField
                                         placeholder={`Option ${optionIndex + 1}`}
                                         value={option.text}
                                         onChange={(e) => handleOptionChange(optionIndex, e.target.value)}
                                         fullWidth
-                                    // Use defaults from theme (size=small, variant=outlined)
-                                    // Optional: Make it look less prominent if desired
-                                    // variant="standard" // Example: Less visual weight
-                                    // sx={{ '& .MuiInput-underline:before': { borderBottom: '1px solid transparent' }, '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottom: '1px solid grey.400'} }} // If standard
+                                        inputProps={{ 'aria-label': `Poll ${pollIndex + 1} Option ${optionIndex + 1}` }}
                                     />
                                 }
                                 sx={{ flexGrow: 1, mr: 0 }}
                                 labelPlacement="end"
                             />
                             {poll.options.length > 1 && (
-                                <IconButton
-                                    size="small"
-                                    onClick={() => removeOption(optionIndex)}
-                                    color="error" // Keep error color indication
-                                    sx={{
-                                        ml: 1,
-                                        // Optional: override hover if theme isn't specific enough for error
-                                        // '&:hover': { backgroundColor: (theme) => alpha(theme.palette.error.main, 0.08) }
-                                    }}
-                                >
-                                    <RemoveCircleOutlineIcon fontSize="inherit" />
-                                </IconButton>
+                                <Tooltip title="Remove option" arrow>
+                                    <IconButton
+                                        aria-label={`Remove option ${optionIndex + 1}`}
+                                        size="small"
+                                        onClick={() => removeOption(optionIndex)}
+                                        color="error"
+                                        sx={{ ml: 1 }}
+                                    >
+                                        <RemoveCircleOutlineIcon fontSize="inherit" />
+                                    </IconButton>
+                                </Tooltip>
                             )}
                         </Box>
                     ))}
@@ -113,18 +121,23 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                         variant="text"
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={addOption}
-                    // Use defaults from theme
                     >
                         Add Option
                     </Button>
-                    <Button
-                        variant="contained"
-                        endIcon={<ArrowForwardIcon />}
-                        disabled={!poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null}
-                    // Use defaults from theme
-                    >
-                        Publish Poll
-                    </Button>
+                    <Tooltip title={publishTooltip} arrow>
+                        {/* Tooltip requires a wrapping element for disabled buttons */}
+                        <span>
+                            <Button
+                                variant="contained"
+                                endIcon={<ArrowForwardIcon />}
+                                disabled={isPublishDisabled}
+                                // Add pointerEvents none when disabled so Tooltip works correctly
+                                sx={isPublishDisabled ? { pointerEvents: 'none' } : {}}
+                            >
+                                Publish Poll
+                            </Button>
+                        </span>
+                    </Tooltip>
                 </Box>
             </Stack>
         </Paper>
@@ -145,14 +158,16 @@ export default function CreatePoll() {
     return (
         <Box sx={{ width: '100%' }}>
             {polls.map((poll, index) => (
-                <PollCard
-                    key={poll.id}
-                    poll={poll}
-                    pollIndex={index}
-                    updatePoll={updatePoll}
-                    removePoll={removePoll}
-                />
-                // {index < polls.length - 1 && <Divider sx={{ my: 3 }} />} // Divider if desired
+                <React.Fragment key={poll.id}>
+                    <PollCard
+                        poll={poll}
+                        pollIndex={index}
+                        updatePoll={updatePoll}
+                        removePoll={removePoll}
+                    />
+                    {/* Optional Divider */}
+                    {/* {index < polls.length - 1 && <Divider sx={{ my: 3, borderColor: 'grey.200' }} />} */}
+                </React.Fragment>
             ))}
 
             <Button
@@ -160,12 +175,7 @@ export default function CreatePoll() {
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addPoll}
                 fullWidth
-                sx={{
-                    mt: 1,
-                    mb: 3,
-                    py: 1.5,
-                    // Use theme styles
-                }}
+                sx={{ mt: 1, mb: 3, py: 1.5 }}
             >
                 Add New Poll
             </Button>

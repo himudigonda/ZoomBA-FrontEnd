@@ -1,19 +1,13 @@
 // src/screens/Leaderboard.jsx
-// NO CHANGES FROM PHASE 2 - Relying on Theme Overrides
-
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Typography, TextField, InputAdornment, IconButton, Button, Stack, Paper } from '@mui/material';
+import { Box, Typography, TextField, InputAdornment, IconButton, Button, Stack, Paper, Tooltip } from '@mui/material'; // Added Tooltip
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
 // Helper function
-const getOrdinal = (n) => {
-    const suffixes = ['th', 'st', 'nd', 'rd'];
-    const v = n % 100;
-    return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
-};
+const getOrdinal = (n) => { /* ... same as before ... */ const suffixes = ['th', 'st', 'nd', 'rd']; const v = n % 100; return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]); };
 
 // Columns definition
 const columns = [
@@ -23,23 +17,23 @@ const columns = [
     { field: 'pollScore', headerName: 'Poll Score', width: 130, headerAlign: 'center', align: 'center' },
     { field: 'timeAttended', headerName: 'Time Attended', width: 150, headerAlign: 'center', align: 'center' },
     { field: 'questionsAsked', headerName: '#Questions Asked', width: 160, type: 'number', headerAlign: 'center', align: 'center' },
-    { field: 'actions', headerName: '', width: 60, sortable: false, filterable: false, disableColumnMenu: true, renderCell: (params) => (<IconButton size="small" onClick={() => console.log('Actions for', params.row.student)}><MoreVertIcon fontSize="small" /></IconButton>), headerAlign: 'center', align: 'center', }
+    {
+        field: 'actions', headerName: '', width: 60, sortable: false, filterable: false, disableColumnMenu: true,
+        renderCell: (params) => (
+            <Tooltip title="More actions" arrow>
+                {/* Add aria-label for accessibility */}
+                <IconButton aria-label={`Actions for ${params.row.student}`} size="small" onClick={() => console.log('Actions for', params.row.student)}>
+                    <MoreVertIcon fontSize="small" />
+                </IconButton>
+            </Tooltip>
+        ),
+        headerAlign: 'center', align: 'center',
+    }
 ];
 
 // Sample data
-const rows = [
-    { id: 1, position: 1, points: 1013, student: 'Mihir Ashish Thakur', pollScore: '5/5', timeAttended: '1:03:30', questionsAsked: 2 },
-    { id: 2, position: 2, points: 998, student: 'Yeshwanth Karra', pollScore: '5/5', timeAttended: '1:02:13', questionsAsked: 3 },
-    { id: 3, position: 3, points: 995, student: 'Himansh Mudigonda', pollScore: '5/5', timeAttended: '0:59:53', questionsAsked: 2 },
-    { id: 4, position: 4, points: 977, student: 'Tanmay Parulekar', pollScore: '5/5', timeAttended: '0:54:34', questionsAsked: 1 },
-    { id: 5, position: 5, points: 974, student: 'Swapneel Paranjpe', pollScore: '4.5/5', timeAttended: '1:01:32', questionsAsked: 1 },
-    { id: 6, position: 6, points: 956, student: 'Riddhi Amale', pollScore: '4/5', timeAttended: '1:02:15', questionsAsked: 0 },
-    { id: 7, position: 7, points: 944, student: 'Maanav Bhavsar', pollScore: '4.5/5', timeAttended: '0:58:52', questionsAsked: 0 },
-    { id: 8, position: 8, points: 922, student: 'Sarthak Garg', pollScore: '4/5', timeAttended: '1:01:03', questionsAsked: 0 },
-    { id: 9, position: 9, points: 901, student: 'Praneeth Palle', pollScore: '3.5/5', timeAttended: '1:01:55', questionsAsked: 0 },
-    { id: 10, position: 10, points: 850, student: 'Shreyas Reddy', pollScore: '2/5', timeAttended: '0:50:23', questionsAsked: 1 },
-    { id: 11, position: 11, points: 840, student: 'Student Eleven', pollScore: '3/5', timeAttended: '0:45:00', questionsAsked: 0 },
-    { id: 12, position: 12, points: 830, student: 'Student Twelve', pollScore: '4/5', timeAttended: '1:10:00', questionsAsked: 1 },
+const rows = [ /* ... same as before ... */
+    { id: 1, position: 1, points: 1013, student: 'Mihir Ashish Thakur', pollScore: '5/5', timeAttended: '1:03:30', questionsAsked: 2 }, { id: 2, position: 2, points: 998, student: 'Yeshwanth Karra', pollScore: '5/5', timeAttended: '1:02:13', questionsAsked: 3 }, { id: 3, position: 3, points: 995, student: 'Himansh Mudigonda', pollScore: '5/5', timeAttended: '0:59:53', questionsAsked: 2 }, { id: 4, position: 4, points: 977, student: 'Tanmay Parulekar', pollScore: '5/5', timeAttended: '0:54:34', questionsAsked: 1 }, { id: 5, position: 5, points: 974, student: 'Swapneel Paranjpe', pollScore: '4.5/5', timeAttended: '1:01:32', questionsAsked: 1 }, { id: 6, position: 6, points: 956, student: 'Riddhi Amale', pollScore: '4/5', timeAttended: '1:02:15', questionsAsked: 0 }, { id: 7, position: 7, points: 944, student: 'Maanav Bhavsar', pollScore: '4.5/5', timeAttended: '0:58:52', questionsAsked: 0 }, { id: 8, position: 8, points: 922, student: 'Sarthak Garg', pollScore: '4/5', timeAttended: '1:01:03', questionsAsked: 0 }, { id: 9, position: 9, points: 901, student: 'Praneeth Palle', pollScore: '3.5/5', timeAttended: '1:01:55', questionsAsked: 0 }, { id: 10, position: 10, points: 850, student: 'Shreyas Reddy', pollScore: '2/5', timeAttended: '0:50:23', questionsAsked: 1 }, { id: 11, position: 11, points: 840, student: 'Student Eleven', pollScore: '3/5', timeAttended: '0:45:00', questionsAsked: 0 }, { id: 12, position: 12, points: 830, student: 'Student Twelve', pollScore: '4/5', timeAttended: '1:10:00', questionsAsked: 1 },
 ];
 
 export default function Leaderboard() {
@@ -73,21 +67,24 @@ export default function Leaderboard() {
                         }}
                         sx={{ flexGrow: 1, minWidth: '200px' }}
                     />
-                    <Button variant="outlined" startIcon={<FilterListIcon />} >
-                        Filter
-                    </Button>
+                    <Tooltip title="Filter leaderboard" arrow>
+                        <Button variant="outlined" startIcon={<FilterListIcon />} >
+                            Filter
+                        </Button>
+                    </Tooltip>
                 </Stack>
             </Stack>
 
             {/* DataGrid Container */}
             <Paper
-                variant="outlined"
+                // Use elevation for subtle shadow instead of outline
+                elevation={1}
                 sx={{
                     flexGrow: 1,
                     width: '100%',
                     overflow: 'hidden',
                     display: 'flex',
-                    borderRadius: '12px'
+                    borderRadius: '12px' // Use a specific radius consistent with theme? theme.shape.borderRadius * 1.5
                 }}
             >
                 <DataGrid
@@ -97,10 +94,10 @@ export default function Leaderboard() {
                     disableSelectionOnClick
                     density="comfortable"
                     sx={{
-                        border: 'none',
+                        border: 'none', // No border on grid itself when inside Paper
                         height: '100%',
                         width: '100%',
-                        // Relying on theme overrides for cell/header/footer styles
+                        // Theme overrides handle cell/header styling
                     }}
                 />
             </Paper>

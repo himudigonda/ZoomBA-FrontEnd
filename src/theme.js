@@ -21,6 +21,9 @@ const GREY = {
     900: '#212529',
 };
 
+// Define a subtle box shadow for elevation 1
+const shadow1 = '0px 2px 4px -1px rgba(0,0,0,0.06), 0px 4px 5px 0px rgba(0,0,0,0.04), 0px 1px 10px 0px rgba(0,0,0,0.03)';
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -42,11 +45,12 @@ const theme = createTheme({
         error: {
             main: '#dc3545',
         },
-        action: { // Define action colors for hover states etc.
-            hover: alpha(GREY[500], 0.08), // Light grey background on hover for icon buttons etc.
+        action: {
+            hover: alpha(GREY[500], 0.08),
             selected: alpha(PRIMARY_COLOR, 0.08),
             disabledBackground: alpha(GREY[500], 0.1),
             disabled: alpha(GREY[500], 0.3),
+            focus: alpha(PRIMARY_COLOR, 0.12), // Added for focus rings maybe
         }
     },
     typography: {
@@ -70,6 +74,15 @@ const theme = createTheme({
     shape: {
         borderRadius: 8,
     },
+    // Define shadows for consistent use
+    shadows: [
+        'none', // 0
+        shadow1, // 1 (our default subtle shadow)
+        '0px 3px 5px -1px rgba(0,0,0,0.07), 0px 5px 8px 0px rgba(0,0,0,0.05), 0px 1px 14px 0px rgba(0,0,0,0.04)', // 2
+        '0px 3px 6px -2px rgba(0,0,0,0.08), 0px 6px 10px 0px rgba(0,0,0,0.06), 0px 1px 18px 0px rgba(0,0,0,0.05)', // 3
+        // ... add more if needed, copying MUI defaults or creating custom ones
+        ...Array(21).fill(shadow1) // Fill remaining with default or customize
+    ],
     components: {
         // --- Base and Transitions ---
         MuiButtonBase: {
@@ -78,13 +91,13 @@ const theme = createTheme({
             },
             styleOverrides: {
                 root: ({ theme }) => ({
-                    transition: theme.transitions.create(['background-color', 'color', 'border-color', 'box-shadow'], {
+                    transition: theme.transitions.create(['background-color', 'color', 'border-color', 'box-shadow', 'opacity'], { // Added opacity
                         duration: theme.transitions.duration.short,
                     }),
                 }),
             }
         },
-        MuiIconButton: { // Add hover effect for IconButtons
+        MuiIconButton: {
             styleOverrides: {
                 root: ({ theme }) => ({
                     transition: theme.transitions.create(['background-color', 'color']),
@@ -92,17 +105,6 @@ const theme = createTheme({
                         backgroundColor: theme.palette.action.hover,
                     },
                 }),
-                // Example: specific color hover if needed
-                // colorPrimary: ({ theme }) => ({
-                //     '&:hover': {
-                //         backgroundColor: alpha(theme.palette.primary.main, 0.08),
-                //     },
-                // }),
-                // colorError: ({ theme }) => ({
-                //      '&:hover': {
-                //          backgroundColor: alpha(theme.palette.error.main, 0.08),
-                //      },
-                //  }),
             }
         },
         // --- Button ---
@@ -131,6 +133,12 @@ const theme = createTheme({
                             backgroundColor: alpha(theme.palette.primary.main, 0.08),
                         },
                     }),
+                    // Ensure disabled state has appropriate styles
+                    '&.Mui-disabled': {
+                        // Opacity is often handled by default, but can customize
+                        // opacity: 0.5,
+                        // Pointer events none is default
+                    }
                 }),
             },
         },
@@ -149,6 +157,7 @@ const theme = createTheme({
                         '& fieldset': {
                             borderColor: theme.palette.grey[300],
                             borderWidth: '1px',
+                            transition: theme.transitions.create(['border-color']), // Transition border color smoothly
                         },
                         '&:hover fieldset': {
                             borderColor: theme.palette.grey[400],
@@ -156,12 +165,14 @@ const theme = createTheme({
                         '&.Mui-focused': {
                             '& fieldset': {
                                 borderColor: theme.palette.primary.main,
-                                // Subtle glow on focus
+                                // Use box-shadow for focus ring instead of thicker border
+                                // borderWidth: '1px', // Keep border width consistent
                                 boxShadow: `0 0 0 1px ${theme.palette.primary.main}`,
                             },
                         },
                         '&.Mui-disabled': {
                             backgroundColor: theme.palette.grey[100],
+                            opacity: 0.7, // Slightly dim disabled fields
                             '& fieldset': {
                                 borderColor: theme.palette.grey[200],
                             }
@@ -170,6 +181,7 @@ const theme = createTheme({
                     '& .MuiInputLabel-root': {
                         fontWeight: 500,
                         color: theme.palette.text.secondary,
+                        transition: theme.transitions.create(['color']), // Smooth label color transition
                         '&.Mui-focused': {
                             color: theme.palette.primary.main,
                         },
@@ -205,6 +217,11 @@ const theme = createTheme({
                     '& .MuiListItemText-primary': {
                         fontWeight: 500,
                     },
+                    // Focus visible style for keyboard navigation
+                    '&.Mui-focusVisible': {
+                        boxShadow: `inset 0 0 0 2px ${theme.palette.primary.main}`,
+                        backgroundColor: theme.palette.action.hover, // Optional background
+                    }
                 }),
             }
         },
@@ -225,18 +242,20 @@ const theme = createTheme({
         // --- Paper & Divider ---
         MuiPaper: {
             defaultProps: {
-                elevation: 0, // Default to no elevation, rely on border or explicit elevation prop
+                elevation: 0, // Use border by default
             },
             styleOverrides: {
                 root: ({ theme }) => ({
                     backgroundColor: theme.palette.background.paper,
+                    // Add transition for shadow changes if elevation is toggled
+                    transition: theme.transitions.create(['box-shadow']),
                 }),
                 outlined: ({ theme }) => ({
                     border: `1px solid ${theme.palette.divider}`,
                 }),
-                // Keep elevation styles for cases where elevation prop is used
-                elevation1: { boxShadow: '0 1px 3px rgba(0,0,0,0.08)' }, // Slightly softer shadow
-                elevation2: { boxShadow: '0 2px 5px rgba(0,0,0,0.1)' },
+                // Use theme.shadows array for consistency
+                elevation1: ({ theme }) => ({ boxShadow: theme.shadows[1] }),
+                elevation2: ({ theme }) => ({ boxShadow: theme.shadows[2] }),
                 // ... add more if needed
             }
         },
@@ -250,75 +269,74 @@ const theme = createTheme({
         // --- DataGrid ---
         MuiDataGrid: {
             styleOverrides: {
-                root: ({ theme }) => ({ // Style the root container if needed (usually handled by Paper wrapper)
-                    // border: 'none', // Ensure no double borders if wrapped in Paper
-                    // backgroundColor: theme.palette.background.paper,
+                root: ({ theme }) => ({
+                    // Base styles handled by Paper wrapper now
                 }),
-                columnHeaders: ({ theme }) => ({ // Style column headers container
-                    backgroundColor: theme.palette.grey[100], // Slightly off-white background
+                columnHeaders: ({ theme }) => ({
+                    backgroundColor: theme.palette.grey[100],
                     borderBottom: `1px solid ${theme.palette.divider}`,
                 }),
-                columnHeader: ({ theme }) => ({ // Style individual column header cell
-                    '&:focus, &:focus-within': {
-                        outline: 'none', // Remove focus outline on header cells
-                    },
-                    // Ensure text style is applied correctly
-                    '& .MuiDataGrid-columnHeaderTitleContainer': {
-                        padding: '0 8px', // Adjust padding if needed
-                    }
+                columnHeader: ({ theme }) => ({
+                    '&:focus, &:focus-within': { outline: 'none' },
+                    '& .MuiDataGrid-columnHeaderTitleContainer': { padding: '0 8px' }
                 }),
-                columnHeaderTitle: ({ theme }) => ({ // Style the text within the header
+                columnHeaderTitle: ({ theme }) => ({
                     fontWeight: 600,
-                    fontSize: '0.875rem', // Slightly larger/bolder than body2
-                    color: theme.palette.text.primary, // Use primary text color for headers
+                    fontSize: '0.875rem',
+                    color: theme.palette.text.primary,
                 }),
-                cell: ({ theme }) => ({ // Style data cells
-                    padding: '0 8px', // Adjust padding if needed
+                cell: ({ theme }) => ({
+                    padding: '0 8px', // Keep cell padding consistent
                     borderBottom: `1px solid ${theme.palette.divider}`,
                     '&:focus, &:focus-within': {
-                        outline: 'none', // Remove default focus outline on cells
-                        // Optional: add subtle background on focus/selection if needed
-                        // backgroundColor: alpha(theme.palette.primary.main, 0.05),
+                        outline: 'none',
+                        // Minimal focus indication on cell if needed
+                        // backgroundColor: theme.palette.action.focus,
                     },
                 }),
-                footerContainer: ({ theme }) => ({ // Style footer area
+                footerContainer: ({ theme }) => ({
                     borderTop: `1px solid ${theme.palette.divider}`,
-                    minHeight: '52px', // Ensure consistent height
+                    minHeight: '52px',
                 }),
-                // Add other DataGrid element styles as needed (e.g., icons)
-                sortIcon: ({ theme }) => ({
-                    color: theme.palette.text.secondary,
-                }),
-                menuIcon: ({ theme }) => ({
-                    color: theme.palette.text.secondary,
-                }),
+                sortIcon: ({ theme }) => ({ color: theme.palette.text.secondary }),
+                menuIcon: ({ theme }) => ({ color: theme.palette.text.secondary }),
+                // Style pagination elements if needed
+                // MuiTablePagination: { ... }
             }
         },
         // --- Radio Button & Form Control Label ---
         MuiRadio: {
             styleOverrides: {
-                root: ({ theme }) => ({ // Style the base radio element
-                    padding: '6px', // Adjust padding around the radio icon
-                    '&.Mui-checked': { // Style when checked
-                        // color: theme.palette.primary.main, // Color already applies from theme
+                root: ({ theme }) => ({
+                    padding: '6px',
+                    '&.Mui-focusVisible': { // Ensure focus visible style is clear
+                        // Default usually okay, but can customize
+                        // boxShadow: `0 0 0 2px ${alpha(theme.palette.primary.main, 0.3)}`,
                     }
                 }),
             }
         },
         MuiFormControlLabel: {
             styleOverrides: {
-                label: ({ theme }) => ({ // Style the label part of the FormControlLabel
-                    // Ensure label typography matches body text or intended style
-                    // fontSize: theme.typography.body2.fontSize,
-                    // color: theme.palette.text.primary,
-                    // If the label is a TextField (like in CreatePoll), its own styles will apply primarily
+                label: ({ theme }) => ({
+                    // Usually inherits typography, adjust if needed
                 }),
             }
         },
-        // --- Scrollbars (Optional, uncomment if desired) ---
-        // MuiCssBaseline: {
-        //     styleOverrides: { ... scrollbar styles from Phase 1 ... }
-        // },
+        // --- Tooltip ---
+        MuiTooltip: {
+            styleOverrides: {
+                tooltip: ({ theme }) => ({ // Style the tooltip itself
+                    backgroundColor: alpha(theme.palette.grey[800], 0.95), // Dark background
+                    fontSize: '0.75rem',
+                    padding: '4px 8px',
+                    borderRadius: theme.shape.borderRadius / 2, // Slightly smaller radius
+                }),
+                arrow: ({ theme }) => ({ // Style the arrow
+                    color: alpha(theme.palette.grey[800], 0.95),
+                }),
+            }
+        },
     }
 });
 
