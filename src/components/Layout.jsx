@@ -6,7 +6,6 @@ import Logo from './Logo'; // Import the Logo component
 
 const drawerWidth = 260;
 
-// Define UPDATED navigation structure (from previous step)
 const navSections = [
     {
         title: 'Meetings',
@@ -15,10 +14,6 @@ const navSections = [
     {
         title: 'Leaderboard',
         items: [{ text: 'Class Leaderboard', path: '/leaderboard' },]
-    },
-    {
-        title: 'Polls and Quizzes',
-        items: [{ text: 'Create Poll', path: '/create-poll' },]
     }
 ];
 
@@ -44,6 +39,7 @@ export default function Layout({ children }) {
                 <Logo />
                 <List sx={{ pt: 0 }}>
                     {navSections.map((section) => (
+                        // Render section only if it has items (good practice)
                         section.items.length > 0 && (
                             <React.Fragment key={section.title}>
                                 {/* ListSubheader styling primarily handled by theme now */}
