@@ -6,28 +6,19 @@ import Logo from './Logo'; // Import the Logo component
 
 const drawerWidth = 260;
 
-// Define UPDATED navigation structure
+// Define UPDATED navigation structure (from previous step)
 const navSections = [
     {
         title: 'Meetings',
-        items: [
-            { text: 'Create New Meeting', path: '/create-meeting' },
-            // Removed 'Join New Meeting'
-            // Removed 'Past Meetings'
-        ]
+        items: [{ text: 'Create New Meeting', path: '/create-meeting' },]
     },
     {
         title: 'Leaderboard',
-        items: [
-            { text: 'Class Leaderboard', path: '/leaderboard' },
-        ]
+        items: [{ text: 'Class Leaderboard', path: '/leaderboard' },]
     },
     {
         title: 'Polls and Quizzes',
-        items: [
-            { text: 'Create Poll', path: '/create-poll' },
-            // Removed 'Create Quiz'
-        ]
+        items: [{ text: 'Create Poll', path: '/create-poll' },]
     }
 ];
 
@@ -35,7 +26,7 @@ export default function Layout({ children }) {
     const location = useLocation();
 
     return (
-        <Box sx={{ display: 'flex', minHeight: '100vh' /* Ensure layout takes full viewport height */ }}>
+        <Box sx={{ display: 'flex', minHeight: '100vh' }}> {/* Verified: Full height */}
             <Drawer
                 variant="permanent"
                 anchor="left"
@@ -46,20 +37,21 @@ export default function Layout({ children }) {
                         width: drawerWidth,
                         boxSizing: 'border-box',
                         borderRight: 'none',
-                        backgroundColor: 'background.paper'
+                        backgroundColor: 'background.paper' // Uses theme color
                     },
                 }}
             >
                 <Logo />
                 <List sx={{ pt: 0 }}>
                     {navSections.map((section) => (
-                        // Only render section if it has items after filtering
                         section.items.length > 0 && (
                             <React.Fragment key={section.title}>
-                                <ListSubheader sx={{ bgcolor: 'transparent', fontWeight: 'bold', color: 'text.secondary', pt: 2, pb: 1, textTransform: 'uppercase', fontSize: '0.75rem', letterSpacing: '0.5px' }}>
+                                {/* ListSubheader styling primarily handled by theme now */}
+                                <ListSubheader disableSticky> {/* disableSticky can prevent style issues */}
                                     {section.title}
                                 </ListSubheader>
                                 {section.items.map((item) => (
+                                    // ListItemButton styling primarily handled by theme now
                                     <ListItemButton
                                         key={item.text}
                                         component={NavLink}
@@ -75,26 +67,26 @@ export default function Layout({ children }) {
                 </List>
             </Drawer>
 
-            {/* Main Content Area - Still centered with max-width but allows vertical growth */}
+            {/* Main Content Area - Verification */}
             <Box
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    bgcolor: 'background.default',
-                    p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
+                    bgcolor: 'background.default', // Uses theme color
+                    p: { xs: 2, sm: 3, md: 4 }, // Consistent padding
                     display: 'flex',
-                    flexDirection: 'column', // Stack children vertically
-                    alignItems: 'center', // Center children horizontally
-                    overflowY: 'auto', // Allow scrolling on the main content area if needed
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    overflowY: 'auto', // Allows scrolling if content exceeds viewport
                 }}
             >
-                {/* Inner wrapper controls max width and allows children to take height */}
+                {/* Inner wrapper - Verification */}
                 <Box sx={{
                     width: '100%',
-                    maxWidth: '1200px',
-                    display: 'flex', // Use flexbox here too
-                    flexDirection: 'column', // Stack content
-                    flexGrow: 1, // Allow this box to grow vertically
+                    maxWidth: '1200px', // Consistent max width
+                    display: 'flex',
+                    flexDirection: 'column',
+                    flexGrow: 1, // Allows content to fill vertical space
                 }}>
                     {children}
                 </Box>
