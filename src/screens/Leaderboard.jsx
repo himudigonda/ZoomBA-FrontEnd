@@ -1,19 +1,21 @@
 // src/screens/Leaderboard.jsx
+// NO CHANGES FROM PHASE 2 - Relying on Theme Overrides
+
 import React, { useState } from 'react';
 import { DataGrid } from '@mui/x-data-grid';
-import { Box, Typography, TextField, InputAdornment, IconButton, Button, Stack, Paper } from '@mui/material'; // Added Paper
+import { Box, Typography, TextField, InputAdornment, IconButton, Button, Stack, Paper } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-// Helper function (no changes)
+// Helper function
 const getOrdinal = (n) => {
     const suffixes = ['th', 'st', 'nd', 'rd'];
     const v = n % 100;
     return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
 };
 
-// Columns definition (no changes)
+// Columns definition
 const columns = [
     { field: 'position', headerName: 'Position', width: 80, type: 'number', align: 'center', headerAlign: 'center', renderCell: (params) => (<Typography variant="body2" fontWeight="medium">{getOrdinal(params.value)}</Typography>), },
     { field: 'student', headerName: 'Student', width: 250, renderCell: (params) => (<Typography variant="body2" fontWeight="medium">{params.value}</Typography>) },
@@ -24,7 +26,7 @@ const columns = [
     { field: 'actions', headerName: '', width: 60, sortable: false, filterable: false, disableColumnMenu: true, renderCell: (params) => (<IconButton size="small" onClick={() => console.log('Actions for', params.row.student)}><MoreVertIcon fontSize="small" /></IconButton>), headerAlign: 'center', align: 'center', }
 ];
 
-// Sample data (no changes)
+// Sample data
 const rows = [
     { id: 1, position: 1, points: 1013, student: 'Mihir Ashish Thakur', pollScore: '5/5', timeAttended: '1:03:30', questionsAsked: 2 },
     { id: 2, position: 2, points: 998, student: 'Yeshwanth Karra', pollScore: '5/5', timeAttended: '1:02:13', questionsAsked: 3 },
@@ -42,98 +44,66 @@ const rows = [
 
 export default function Leaderboard() {
     const [searchText, setSearchText] = useState('');
-    // const [viewMode, setViewMode] = useState('list'); // Removed if not using toggles
 
     const filteredRows = rows.filter((row) =>
         row.student.toLowerCase().includes(searchText.toLowerCase())
     );
 
     return (
-        // Ensure this Box takes full height from Layout's inner wrapper
         <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%' }}>
             {/* Header Section */}
             <Stack
                 direction={{ xs: 'column', sm: 'row' }}
                 justifyContent="space-between"
                 alignItems={{ xs: 'flex-start', sm: 'center' }}
-                mb={3} // Keep margin bottom to separate from grid
+                mb={3}
                 spacing={2}
                 sx={{ flexShrink: 0 }}
             >
-                <Typography variant="h5" sx={{ fontWeight: 700 /* Use theme weight */ }}>
+                <Typography variant="h5" sx={{ fontWeight: 700 }}>
                     Spring 2025 : Leaderboard
                 </Typography>
                 <Stack direction="row" spacing={1.5} alignItems="center" sx={{ width: { xs: '100%', sm: 'auto' } }}>
                     <TextField
-                        // variant="outlined" // Default from theme
-                        // size="small" // Default from theme
                         placeholder="Search Student..."
                         value={searchText}
                         onChange={(e) => setSearchText(e.target.value)}
                         InputProps={{
                             startAdornment: (<InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>),
-                            // Use theme overrides for styling, add specific sx if needed
-                            // sx: { borderRadius: '20px', backgroundColor: 'background.paper' }
                         }}
                         sx={{ flexGrow: 1, minWidth: '200px' }}
                     />
-                    <Button
-                        variant="outlined"
-                        startIcon={<FilterListIcon />}
-                        // size="medium" // Use default button size or theme override
-                        sx={{
-                            // Use theme styles, override if necessary
-                            // color: 'text.primary',
-                            // borderColor: 'grey.300',
-                            // bgcolor: 'background.paper'
-                        }}
-                    >
+                    <Button variant="outlined" startIcon={<FilterListIcon />} >
                         Filter
                     </Button>
-                    {/* View toggles removed for simplicity unless needed */}
                 </Stack>
             </Stack>
 
-            {/* DataGrid Container - Use Paper for consistent card styling */}
+            {/* DataGrid Container */}
             <Paper
-                variant="outlined" // Use outlined variant for a defined border based on theme divider color
+                variant="outlined"
                 sx={{
-                    flexGrow: 1, // Make Paper grow to fill space
+                    flexGrow: 1,
                     width: '100%',
-                    overflow: 'hidden', // Hide overflow on the Paper, DataGrid handles scrolling
-                    display: 'flex', // Needed for DataGrid height: 100% to work correctly
-                    borderRadius: '12px' // Apply border radius here
+                    overflow: 'hidden',
+                    display: 'flex',
+                    borderRadius: '12px'
                 }}
             >
                 <DataGrid
                     rows={filteredRows}
                     columns={columns}
-                    autoPageSize // Let grid calculate rows based on height
+                    autoPageSize
                     disableSelectionOnClick
                     density="comfortable"
-                    // Use theme overrides for styling (borders, headers etc.)
-                    // Add specific DataGrid sx if theme isn't covering something
                     sx={{
-                        border: 'none', // Remove internal border, rely on Paper's border
-                        height: '100%', // Fill the Paper container
+                        border: 'none',
+                        height: '100%',
                         width: '100%',
-                        '& .MuiDataGrid-columnHeaders': {
-                            // Optional: Add slight background if needed, theme might handle it
-                            // backgroundColor: (theme) => theme.palette.grey[100],
-                            borderBottom: (theme) => `1px solid ${theme.palette.divider}`,
-                        },
-                        '& .MuiDataGrid-cell': {
-                            borderBottom: (theme) => `1px solid ${theme.palette.divider}`, // Ensure cell borders match theme
-                        },
-                        '& .MuiDataGrid-footerContainer': {
-                            borderTop: (theme) => `1px solid ${theme.palette.divider}`, // Ensure footer border matches theme
-                        },
-                        '& .MuiDataGrid-virtualScroller': {
-                            // Ensure scrollbar styling (if customized in theme) applies
-                        }
+                        // Relying on theme overrides for cell/header/footer styles
                     }}
                 />
-            </Paper> {/* Close Paper */}
+            </Paper>
         </Box>
     );
 }

@@ -1,6 +1,6 @@
 // src/screens/CreatePoll.jsx
 import React, { useState } from 'react';
-import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider } from '@mui/material'; // Keep Divider if needed between cards
+import { Box, Button, TextField, Typography, IconButton, Paper, Stack, RadioGroup, FormControlLabel, Radio, Divider } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
@@ -19,16 +19,13 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
     const getCorrectOptionIndex = () => { const index = poll.options.findIndex(opt => opt.isCorrect); return index === -1 ? null : index; }
 
     return (
-        // Use Paper component for consistent card styling
         <Paper
-            variant="outlined" // Use outlined variant consistent with other cards
+            variant="outlined"
             sx={{
                 p: 3,
-                mb: 3, // Keep margin bottom between poll cards
-                borderRadius: 3, // Consistent radius (e.g., 12px)
+                mb: 3,
+                borderRadius: 3, // Match theme or set specific (e.g., 12px)
                 position: 'relative',
-                // Border handled by variant="outlined"
-                // boxShadow: (theme) => theme.shadows[1], // Optional subtle shadow
             }}
         >
             <IconButton
@@ -37,16 +34,16 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                 size="small"
                 sx={{
                     position: 'absolute',
-                    top: 12, // Adjust position slightly
+                    top: 12,
                     right: 12,
                     color: 'grey.500',
-                    '&:hover': { color: 'error.main', backgroundColor: (theme) => theme.palette.action.hover }
+                    // Hover handled by theme override for MuiIconButton
+                    // '&:hover': { color: 'error.main', backgroundColor: (theme) => theme.palette.action.hover }
                 }}
             >
                 <CloseIcon fontSize="small" />
             </IconButton>
 
-            {/* Use Stack for consistent internal spacing */}
             <Stack spacing={2.5}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pr: '30px' }}>
                     <Typography variant="h6" sx={{ fontWeight: 600 }}>Poll {pollIndex + 1}</Typography>
@@ -55,11 +52,9 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                 <TextField
                     label="Poll Question"
                     fullWidth
-                    // variant="outlined" // Default from theme
                     value={poll.question}
                     onChange={handleQuestionChange}
-                // size="small" // Default from theme
-                // sx={{ backgroundColor: 'background.paper' }} // Let theme handle it
+                // Use defaults from theme
                 />
 
                 <Typography variant="body2" sx={{ fontWeight: 500, color: 'text.secondary', pt: 1 }}>Options:</Typography>
@@ -73,23 +68,39 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
                         <Box key={optionIndex} sx={{ display: 'flex', gap: 1, alignItems: 'center', mb: 1 }}>
                             <FormControlLabel
                                 value={optionIndex.toString()}
-                                control={<Radio size="small" icon={<RadioButtonUncheckedIcon fontSize="inherit" />} checkedIcon={<CheckCircleOutlineIcon fontSize="inherit" />} />}
+                                // Use theme styles for Radio
+                                control={<Radio
+                                    size="small"
+                                    icon={<RadioButtonUncheckedIcon fontSize="inherit" />} // Use inherit to match surrounding font size
+                                    checkedIcon={<CheckCircleOutlineIcon fontSize="inherit" />}
+                                />}
                                 label={
+                                    // TextField for option text
                                     <TextField
                                         placeholder={`Option ${optionIndex + 1}`}
                                         value={option.text}
                                         onChange={(e) => handleOptionChange(optionIndex, e.target.value)}
                                         fullWidth
-                                    // variant="outlined" // Default from theme
-                                    // size="small" // Default from theme
-                                    // sx={{ backgroundColor: 'background.paper' }} // Theme handles background
+                                    // Use defaults from theme (size=small, variant=outlined)
+                                    // Optional: Make it look less prominent if desired
+                                    // variant="standard" // Example: Less visual weight
+                                    // sx={{ '& .MuiInput-underline:before': { borderBottom: '1px solid transparent' }, '& .MuiInput-underline:hover:not(.Mui-disabled):before': { borderBottom: '1px solid grey.400'} }} // If standard
                                     />
                                 }
                                 sx={{ flexGrow: 1, mr: 0 }}
                                 labelPlacement="end"
                             />
                             {poll.options.length > 1 && (
-                                <IconButton size="small" onClick={() => removeOption(optionIndex)} color="error" sx={{ ml: 1 }}>
+                                <IconButton
+                                    size="small"
+                                    onClick={() => removeOption(optionIndex)}
+                                    color="error" // Keep error color indication
+                                    sx={{
+                                        ml: 1,
+                                        // Optional: override hover if theme isn't specific enough for error
+                                        // '&:hover': { backgroundColor: (theme) => alpha(theme.palette.error.main, 0.08) }
+                                    }}
+                                >
                                     <RemoveCircleOutlineIcon fontSize="inherit" />
                                 </IconButton>
                             )}
@@ -99,24 +110,24 @@ function PollCard({ poll, pollIndex, updatePoll, removePoll }) {
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
                     <Button
-                        variant="text" // Use text variant for less emphasis
-                        // size="small" // Default from theme override or specify if needed
+                        variant="text"
                         startIcon={<AddCircleOutlineIcon />}
                         onClick={addOption}
+                    // Use defaults from theme
                     >
                         Add Option
                     </Button>
                     <Button
-                        variant="contained" // Keep contained for primary action per poll
-                        // size="small" // Default from theme override or specify if needed
+                        variant="contained"
                         endIcon={<ArrowForwardIcon />}
                         disabled={!poll.question || poll.options.length < 2 || poll.options.some(o => !o.text) || getCorrectOptionIndex() === null}
+                    // Use defaults from theme
                     >
                         Publish Poll
                     </Button>
                 </Box>
             </Stack>
-        </Paper> // Close Paper
+        </Paper>
     );
 }
 
@@ -127,17 +138,12 @@ export default function CreatePoll() {
         { id: Date.now(), question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }
     ]);
 
-    const updatePoll = (index, updatedPollData) => { /* ... */ const newPolls = [...polls]; newPolls[index] = updatedPollData; setPolls(newPolls); };
-    const addPoll = () => { /* ... */ setPolls([...polls, { id: Date.now() + polls.length, question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }]); };
-    const removePoll = (indexToRemove) => { /* ... */ setPolls(prevPolls => prevPolls.filter((_, index) => index !== indexToRemove)); };
-    // const handleOverallSubmit = () => { console.log('Submitting all polls:', polls); }; // Keep if needed
+    const updatePoll = (index, updatedPollData) => { const newPolls = [...polls]; newPolls[index] = updatedPollData; setPolls(newPolls); };
+    const addPoll = () => { setPolls([...polls, { id: Date.now() + polls.length, question: '', options: [{ text: '', isCorrect: false }, { text: '', isCorrect: false }], correctOptionIndex: null }]); };
+    const removePoll = (indexToRemove) => { setPolls(prevPolls => prevPolls.filter((_, index) => index !== indexToRemove)); };
 
     return (
-        // This Box fills the space provided by Layout's inner wrapper
         <Box sx={{ width: '100%' }}>
-            {/* Optional Title for the Page */}
-            {/* <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>Create Polls</Typography> */}
-
             {polls.map((poll, index) => (
                 <PollCard
                     key={poll.id}
@@ -146,31 +152,23 @@ export default function CreatePoll() {
                     updatePoll={updatePoll}
                     removePoll={removePoll}
                 />
-                // Optional: Add Divider between cards
-                // {index < polls.length - 1 && <Divider sx={{ my: 3 }} />}
+                // {index < polls.length - 1 && <Divider sx={{ my: 3 }} />} // Divider if desired
             ))}
 
-            {/* "Add New Poll" Button - Use outlined style for secondary action */}
             <Button
-                variant="outlined" // More appropriate for adding another item
+                variant="outlined"
                 startIcon={<AddCircleOutlineIcon />}
                 onClick={addPoll}
                 fullWidth
                 sx={{
-                    mt: 1, // Adjust margin top if needed
+                    mt: 1,
                     mb: 3,
-                    py: 1.5, // Give it good vertical padding
-                    // Use theme styles for border/color
-                    // borderColor: 'grey.300',
-                    // color: 'text.primary',
-                    // bgcolor: 'background.paper', // Optional background
-                    // '&:hover': { bgcolor: 'grey.100' }
+                    py: 1.5,
+                    // Use theme styles
                 }}
             >
                 Add New Poll
             </Button>
-
-            {/* Optional: Add a button to submit/save all polls at once */}
         </Box>
     );
 }
