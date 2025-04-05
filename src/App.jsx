@@ -4,10 +4,11 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import CreateMeeting from './screens/CreateMeeting';
 import Leaderboard from './screens/Leaderboard';
-import UploadChat from './screens/UploadChat'; // <-- Import the new screen
+import UploadChat from './screens/UploadChat';
+import UpcomingMeetings from './screens/UpcomingMeetings'; // <-- Import the new screen
 import { Box, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'; // For 404
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 console.log("[DEBUG] App.jsx :: Module loaded.");
 
@@ -72,17 +73,18 @@ function App() {
         <Route path="/" element={<BaseScreen />} />
         {console.log("[DEBUG] App.App :: Setting up Route for /create-meeting")}
         <Route path="/create-meeting" element={<CreateMeeting />} />
+        {console.log("[DEBUG] App.App :: Setting up Route for /upcoming-meetings")}
+        <Route path="/upcoming-meetings" element={<UpcomingMeetings />} /> {/* <-- Add route for UpcomingMeetings */}
         {console.log("[DEBUG] App.App :: Setting up Route for /leaderboard")}
         <Route path="/leaderboard" element={<Leaderboard />} />
         {console.log("[DEBUG] App.App :: Setting up Route for /upload-chat")}
-        <Route path="/upload-chat" element={<UploadChat />} /> {/* <-- Add route for UploadChat */}
+        <Route path="/upload-chat" element={<UploadChat />} />
         {console.log("[DEBUG] App.App :: Setting up catch-all (*) Route for 404")}
-        <Route path="*" element={<NotFoundScreen />} /> {/* <-- Add catch-all 404 route */}
+        <Route path="*" element={<NotFoundScreen />} />
         {console.log("[DEBUG] App.App :: Finished setting up Routes.")}
       </Routes>
     </Layout>
   );
-  // Note: Log before return if needed, as code after return in a function won't execute.
 }
 
 export default App;

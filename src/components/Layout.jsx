@@ -7,17 +7,21 @@ import Logo from './Logo';
 const drawerWidth = 260;
 console.log("[DEBUG] Layout.jsx :: Module loaded, drawerWidth:", drawerWidth);
 
-// Define UPDATED navigation structure (Added Chat Analysis)
+// Define UPDATED navigation structure (Added Upcoming Meetings)
 const navSections = [
     {
         title: 'Meetings',
-        items: [{ text: 'Create New Meeting', path: '/create-meeting' },]
+        items: [
+            { text: 'Upcoming Meetings', path: '/upcoming-meetings' }, // <-- Added link
+            { text: 'Create New Meeting', path: '/create-meeting' },
+            // { text: 'Past Meetings', path: '/past-meetings' }, // Example if added later
+        ]
     },
     {
         title: 'Leaderboard',
         items: [{ text: 'Class Leaderboard', path: '/leaderboard' },]
     },
-    { // <-- New Section for Chat Upload -->
+    {
         title: 'Chat Analysis',
         items: [{ text: 'Upload Chat File', path: '/upload-chat' },]
     }
@@ -109,7 +113,7 @@ export default function Layout({ children }) {
                     maxWidth: '1200px',
                     display: 'flex',
                     flexDirection: 'column',
-                    flexGrow: 1, // Important for components like UploadChat/BaseScreen to fill space
+                    flexGrow: 1,
                 }}>
                     {console.log("[DEBUG] Layout.Layout :: Rendering children components.")}
                     {children}
