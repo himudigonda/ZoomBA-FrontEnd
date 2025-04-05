@@ -1,9 +1,8 @@
 // src/screens/UpcomingMeetings.jsx
 import React, { useState, useEffect } from 'react';
-import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemIcon, Divider, IconButton, Tooltip, CircularProgress, Stack } from '@mui/material'; // Added Stack import
+import { Box, Paper, Typography, List, ListItem, ListItemText, ListItemIcon, Divider, IconButton, Tooltip, CircularProgress } from '@mui/material';
 import EventIcon from '@mui/icons-material/Event';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import InfoIcon from '@mui/icons-material/InfoOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime'; // Keep if potentially needed later
 import VideocamIcon from '@mui/icons-material/Videocam';
 
 console.log("[DEBUG] UpcomingMeetings.jsx :: Module loaded.");
@@ -45,13 +44,9 @@ export default function UpcomingMeetings() {
         alert(`Placeholder: Joining meeting "${meetingName}"...`);
     };
 
-    const handleMeetingDetails = (meetingId, meetingName) => {
-        console.log(`[INFO] UpcomingMeetings.handleMeetingDetails :: Details button clicked for meeting: ${meetingName} (ID: ${meetingId})`);
-        alert(`Placeholder: Showing details for meeting "${meetingName}"...`);
-    };
-
     console.log("[DEBUG] UpcomingMeetings.UpcomingMeetings :: Rendering component structure.");
-    console.log("[DEBUG] UpcomingMeetings.UpcomingMeetings :: Component rendering execution finished, returning JSX.");
+    // Placed log just before return for correct execution indication
+    console.log("[DEBUG] UpcomingMeetings.UpcomingMeetings :: Component rendering finished. Returning JSX.");
     return (
         <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 3 }}>
             {console.log("[DEBUG] UpcomingMeetings.UpcomingMeetings :: Rendering title.")}
@@ -80,32 +75,18 @@ export default function UpcomingMeetings() {
                                 <React.Fragment key={meeting.id}>
                                     <ListItem
                                         sx={{ py: 1.5 }}
-                                        secondaryAction={
-                                            // This is where Stack is used
-                                            <Stack direction="row" spacing={0.5}>
-                                                {console.log(`[DEBUG] UpcomingMeetings.UpcomingMeetings :: Rendering action buttons for meeting: ${meeting.id}`)}
-                                                <Tooltip title="Join Meeting" arrow>
-                                                    <IconButton
-                                                        edge="end"
-                                                        aria-label={`Join meeting ${meeting.name}`}
-                                                        onClick={() => handleJoinMeeting(meeting.id, meeting.name)}
-                                                        size="small"
-                                                        color="primary"
-                                                    >
-                                                        <VideocamIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                                <Tooltip title="Meeting Details" arrow>
-                                                    <IconButton
-                                                        edge="end"
-                                                        aria-label={`Details for meeting ${meeting.name}`}
-                                                        onClick={() => handleMeetingDetails(meeting.id, meeting.name)}
-                                                        size="small"
-                                                    >
-                                                        <InfoIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Tooltip>
-                                            </Stack>
+                                        secondaryAction={ // Modified secondaryAction
+                                            <Tooltip title="Join Meeting" arrow>
+                                                <IconButton
+                                                    edge="end"
+                                                    aria-label={`Join meeting ${meeting.name}`}
+                                                    onClick={() => handleJoinMeeting(meeting.id, meeting.name)}
+                                                    size="small"
+                                                    color="primary"
+                                                >
+                                                    <VideocamIcon fontSize="small" />
+                                                </IconButton>
+                                            </Tooltip>
                                         }
                                     >
                                         <ListItemIcon sx={{ minWidth: 40 }}>
