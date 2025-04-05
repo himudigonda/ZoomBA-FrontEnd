@@ -1,39 +1,62 @@
 // src/App.jsx
-import React, { useEffect } from 'react'; // Added useEffect
+import React, { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
 import CreateMeeting from './screens/CreateMeeting';
 import Leaderboard from './screens/Leaderboard';
+import UploadChat from './screens/UploadChat'; // <-- Import the new screen
 import { Box, Typography } from '@mui/material';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'; // For 404
 
 console.log("[DEBUG] App.jsx :: Module loaded.");
 
 // Base Screen (Welcome screen)
 const BaseScreen = () => {
   console.log("[DEBUG] App.BaseScreen :: Component rendering started.");
-
   useEffect(() => {
     console.log("[INFO] App.BaseScreen :: Component mounted.");
     return () => {
       console.log("[INFO] App.BaseScreen :: Component will unmount.");
     };
   }, []);
-
   console.log("[DEBUG] App.BaseScreen :: Component rendering finished.");
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexGrow: 1 }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexGrow: 1, textAlign: 'center', p: 2 }}>
       <AddCircleOutlineIcon sx={{ fontSize: 80, color: 'grey.400', mb: 2 }} />
       <Typography variant="h6" sx={{ color: 'text.secondary' }}>
-        Create / Join Meeting to Get Started
+        Select an option from the sidebar to get started
       </Typography>
     </Box>
   );
 };
 
+// Simple 404 Component
+const NotFoundScreen = () => {
+  console.log("[DEBUG] App.NotFoundScreen :: Component rendering started.");
+  useEffect(() => {
+    console.log("[INFO] App.NotFoundScreen :: Component mounted.");
+    return () => {
+      console.log("[INFO] App.NotFoundScreen :: Component will unmount.");
+    };
+  }, []);
+  console.log("[DEBUG] App.NotFoundScreen :: Component rendering finished.");
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flexGrow: 1, textAlign: 'center', p: 2 }}>
+      <ErrorOutlineIcon sx={{ fontSize: 80, color: 'grey.400', mb: 2 }} />
+      <Typography variant="h5" sx={{ color: 'text.primary', mb: 1 }}>
+        404 - Page Not Found
+      </Typography>
+      <Typography variant="body1" sx={{ color: 'text.secondary' }}>
+        The page you are looking for does not exist.
+      </Typography>
+    </Box>
+  );
+};
+
+
 function App() {
   console.log("[DEBUG] App.App :: Component rendering started.");
-
   useEffect(() => {
     console.log("[INFO] App.App :: Component mounted.");
     return () => {
@@ -51,13 +74,15 @@ function App() {
         <Route path="/create-meeting" element={<CreateMeeting />} />
         {console.log("[DEBUG] App.App :: Setting up Route for /leaderboard")}
         <Route path="/leaderboard" element={<Leaderboard />} />
-        {/* Catch-all or specific 404 route could be added here */}
-        <Route path="*" element={<Typography>404 - Page Not Found</Typography>} />
+        {console.log("[DEBUG] App.App :: Setting up Route for /upload-chat")}
+        <Route path="/upload-chat" element={<UploadChat />} /> {/* <-- Add route for UploadChat */}
+        {console.log("[DEBUG] App.App :: Setting up catch-all (*) Route for 404")}
+        <Route path="*" element={<NotFoundScreen />} /> {/* <-- Add catch-all 404 route */}
         {console.log("[DEBUG] App.App :: Finished setting up Routes.")}
       </Routes>
     </Layout>
   );
-  console.log("[DEBUG] App.App :: Component rendering finished."); // Note: This line might not execute predictably due to the return statement above. Log before return.
+  // Note: Log before return if needed, as code after return in a function won't execute.
 }
 
 export default App;

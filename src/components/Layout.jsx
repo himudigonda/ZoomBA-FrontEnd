@@ -1,13 +1,13 @@
 // src/components/Layout.jsx
-import React, { useEffect } from 'react'; // Added useEffect for mount log
+import React, { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { Drawer, List, ListItemButton, ListItemText, Box, ListSubheader } from '@mui/material';
-import Logo from './Logo'; // Import the Logo component
+import Logo from './Logo';
 
 const drawerWidth = 260;
 console.log("[DEBUG] Layout.jsx :: Module loaded, drawerWidth:", drawerWidth);
 
-// Define UPDATED navigation structure (Polls removed)
+// Define UPDATED navigation structure (Added Chat Analysis)
 const navSections = [
     {
         title: 'Meetings',
@@ -16,6 +16,10 @@ const navSections = [
     {
         title: 'Leaderboard',
         items: [{ text: 'Class Leaderboard', path: '/leaderboard' },]
+    },
+    { // <-- New Section for Chat Upload -->
+        title: 'Chat Analysis',
+        items: [{ text: 'Upload Chat File', path: '/upload-chat' },]
     }
 ];
 console.log("[DEBUG] Layout.jsx :: Defined navSections:", JSON.stringify(navSections));
@@ -30,7 +34,7 @@ export default function Layout({ children }) {
         return () => {
             console.log("[INFO] Layout.Layout :: Component will unmount.");
         };
-    }, []); // Empty dependency array means this runs once on mount and cleanup on unmount
+    }, []);
 
     console.log("[DEBUG] Layout.Layout :: Rendering Drawer.");
     return (
@@ -72,7 +76,7 @@ export default function Layout({ children }) {
                                                 component={NavLink}
                                                 to={item.path}
                                                 selected={isSelected}
-                                                onClick={() => console.log(`[DEBUG] Layout.Layout :: Clicked navigation item: ${item.text}`)} // Added onClick log
+                                                onClick={() => console.log(`[DEBUG] Layout.Layout :: Clicked navigation item: ${item.text}`)}
                                             >
                                                 <ListItemText primary={item.text} />
                                             </ListItemButton>
@@ -105,7 +109,7 @@ export default function Layout({ children }) {
                     maxWidth: '1200px',
                     display: 'flex',
                     flexDirection: 'column',
-                    flexGrow: 1,
+                    flexGrow: 1, // Important for components like UploadChat/BaseScreen to fill space
                 }}>
                     {console.log("[DEBUG] Layout.Layout :: Rendering children components.")}
                     {children}
